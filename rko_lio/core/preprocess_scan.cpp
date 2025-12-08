@@ -49,13 +49,13 @@ clip_frame(const std::vector<Eigen::Vector3d>& frame, const double min_range, co
 namespace rko_lio::core {
 
 PreprocessingResult preprocess_scan(const Vector3dVector& frame, const LIO::Config& config) {
-  Vector3dVector downsampled_frame = voxel_down_sample(frame, config.voxel_size * 0.5);
-  downsampled_frame = clip_frame(downsampled_frame, config.min_range, config.max_range);
+  Vector3dVector clipped_frame = voxel_down_sample(frame, config.voxel_size * 0.5);
+  Vector3dVector downsampled_frame = clip_frame(clipped_frame, config.min_range, config.max_range);
   if (config.double_downsample) {
     const Vector3dVector keypoints = voxel_down_sample(downsampled_frame, config.voxel_size * 1.5);
-    return {.filtered_frame = frame, .map_frame = downsampled_frame, .keypoints = keypoints};
+    return {.filtered_frame = clipped_frame, .map_frame = downsampled_frame, .keypoints = keypoints};
   }
-  return {.filtered_frame = frame, .map_frame = std::nullopt, .keypoints = downsampled_frame};
+  return {.filtered_frame = clipped_frame, .map_frame = std::nullopt, .keypoints = downsampled_frame};
 }
 
 } // namespace rko_lio::core
