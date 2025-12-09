@@ -1,9 +1,7 @@
 #pragma once
 #include <Eigen/Core>
 #include <Eigen/Dense>
-#include <algorithm>
 #include <optional>
-#include <random>
 #include <sophus/se3.hpp>
 #include <vector>
 
