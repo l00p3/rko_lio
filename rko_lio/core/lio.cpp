@@ -427,7 +427,8 @@ Vector3dVector LIO::register_scan(const Vector3dVector& scan, const TimestampVec
   // body acceleration filter
   const auto& accel_filter_info = get_accel_info(initial_guess.so3(), current_lidar_time);
 
-  const auto& preproc_result = preprocess_scan(scan, timestamps, current_lidar_time, relative_pose_at_time, config);
+  const auto& preproc_result =
+      preprocess_scan(scan, config, timestamps, current_lidar_time, avg_body_accel, avg_ang_vel, lidar_state);
 
   if (!map.Empty()) {
     SCOPED_PROFILER("ICP");
