@@ -41,14 +41,15 @@ PreprocessingResult preprocess_scan(const Vector3dVector& frame,
 
   clipped_frame.reserve(frame.size());
   for (size_t i = 0; i < frame.size(); ++i) {
-    // Initialization
-    Eigen::Vector3d point = frame[i];
-
     // DESKEW
-    if (config.deskew and timestamps) {
-      const auto pose = scan_to_scan_motion_inverse * relative_pose_at_time((*timestamps)[i]);
-      point = pose * point;
-    }
+    const Eigen::Vector3d point = std::invoke([&]() {
+      if (config.deskew and timestamps) {
+        const auto pose = scan_to_scan_motion_inverse * relative_pose_at_time((*timestamps)[i]);
+        return pose * frame[i];
+      } else {
+        return frame[i];
+      }
+    });
 
     // CLIPPING
     const double point_range = point.norm();
@@ -63,7 +64,7 @@ PreprocessingResult preprocess_scan(const Vector3dVector& frame,
       grid.insert({voxel, point});
     }
   }
-  /*clipped_frame.shrink_to_fit();*/
+  clipped_frame.shrink_to_fit();
 
   // Extract points from grid (to preserve implicit random shuffling and avod fake regularities)
   std::vector<Eigen::Vector3d> downsampled_frame;
